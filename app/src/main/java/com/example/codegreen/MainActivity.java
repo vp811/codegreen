@@ -1,9 +1,11 @@
 package com.example.codegreen;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.codegreen.ui.userprofile.Milestone;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -16,6 +18,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.codegreen.databinding.ActivityMainBinding;
 
+import org.eazegraph.lib.charts.PieChart;
+import org.eazegraph.lib.models.PieModel;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
@@ -26,6 +31,11 @@ public class MainActivity extends AppCompatActivity {
     private User user;
 
     public AppBarConfiguration appBarConfiguration;
+
+    // Create the object of TextView and PieChart class
+    TextView tvFood, tvTransport, tvClothing, tvOthers;
+    PieChart pieChart;
+
 
     private User makeGenericUser() {
         User user = new User();
@@ -78,10 +88,45 @@ public class MainActivity extends AppCompatActivity {
         }
         setTheme(themeId);
     }
+    private void setData() {
+
+        // Set the percentage of carbons emitted
+
+        tvFood.setText(Integer.toString(40));
+        tvTransport.setText(Integer.toString(30));
+        tvClothing.setText(Integer.toString(5));
+        tvOthers.setText(Integer.toString(25));
+
+        // Set the data and color to the pie chart
+        pieChart.addPieSlice(
+                new PieModel(
+                        "Food (20KG)",
+                        Integer.parseInt(tvFood.getText().toString()),
+                        Color.parseColor("#FFA726")));
+        pieChart.addPieSlice(
+                new PieModel(
+                        "Transport (15KG)",
+                        Integer.parseInt(tvTransport.getText().toString()),
+                        Color.parseColor("#66BB6A")));
+        pieChart.addPieSlice(
+                new PieModel(
+                        "Others (12.5KG)",
+                        Integer.parseInt(tvOthers.getText().toString()),
+                        Color.parseColor("#29B6F6")));
+        pieChart.addPieSlice(
+                new PieModel(
+                        "Clothing (2.5KG)",
+                        Integer.parseInt(tvClothing.getText().toString()),
+                        Color.parseColor("#EF5350")));
+
+        // To animate the pie chart
+        pieChart.startAnimation();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
         user = makeGenericUser();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -96,6 +141,17 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        // Link those objects with their respective id's that we have given in .XML file
+        tvFood = findViewById(R.id.tvFood);
+        tvTransport = findViewById(R.id.tvTransport);
+        tvClothing = findViewById(R.id.tvClothing);
+        tvOthers = findViewById(R.id.tvOthers);
+        pieChart = findViewById(R.id.piechart);
+
+        // Creating a method setData()
+        // to set the text in text view and pie chart
+        setData();
     }
 
     // Based on Android Studio tutorials, allows use of back button (for things like User Profile Milestones Fragment).
@@ -105,6 +161,13 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        setContentView(R.layout.activity_main);
+//        setData();
+//    }
 
     public User getUser() {
         return user;
